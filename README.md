@@ -1,1 +1,2 @@
-# HikerNet_og
+start intsaling expo and node
+set gitignore
