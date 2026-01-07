@@ -1,2 +1,2 @@
-start intsaling expo and node
+start installing expo and node
 set gitignore
