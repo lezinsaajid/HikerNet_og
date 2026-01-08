@@ -97,4 +97,72 @@ router.post("/login", async (req, res) => {
     }
 });
 
+import { OAuth2Client } from "google-auth-library";
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+router.post("/google", async (req, res) => {
+    try {
+        const { token } = req.body;
+
+        if (!token) return res.status(400).json({ message: "Token is required" });
+
+        // Verify token (If we had a real Client ID. For now we will allow skip if not configured, or fail)
+        // In production:
+        // const ticket = await client.verifyIdToken({
+        //     idToken: token,
+        //     audience: process.env.GOOGLE_CLIENT_ID
+        // });
+        // const { name, email, picture } = ticket.getPayload();
+
+        // For development/mock without valid FE token: 
+        // We will assume the token IS the email for testing or simulate decode if it looks like JWT.
+        // BUT to be safe and follow plan, I will write the REAL code, but commented out check if Env is missing?
+        // No, let's write the REAL code. User can set GOOGLE_CLIENT_ID later.
+
+        // However, since I cannot get a real Google Token easily without a frontend, verification might fail.
+        // I will implement standard verification.
+
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const { name, email, picture } = ticket.getPayload();
+
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            // Create new user
+            // Generate a random password since they use Google
+            const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+
+            user = new User({
+                username: name.split(" ").join("").toLowerCase() + Math.floor(Math.random() * 1000), // simplistic username gen
+                email,
+                password: randomPassword,
+                profileImage: picture,
+            });
+            await user.save();
+        }
+
+        const jwtToken = generateToken(user._id);
+
+        res.status(200).json({
+            token: jwtToken,
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                profileImage: user.profileImage,
+                createdAt: user.createdAt,
+            },
+        });
+
+    } catch (error) {
+        console.log("Error in google login:", error);
+        res.status(400).json({ message: "Invalid Google Token" });
+    }
+});
+
 export default router;

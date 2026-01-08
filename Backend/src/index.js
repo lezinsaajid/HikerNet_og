@@ -4,6 +4,14 @@ import "dotenv/config";
 import job from "./lib/cron.js";
 
 import authRoutes from "./routes/authRoutes.js";
+import trekRoutes from "./routes/trekRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import postRoutes from "./routes/postRoutes.js";
+import storyRoutes from "./routes/storyRoutes.js";
+import safetyRoutes from "./routes/safetyRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
+import weatherRoutes from "./routes/weatherRoutes.js";
+import locationRoutes from "./routes/locationRoutes.js";
 
 import { connectDB } from "./lib/db.js";
 
@@ -15,6 +23,14 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/treks", trekRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/posts", postRoutes);
+app.use("/api/stories", storyRoutes);
+app.use("/api/safety", safetyRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/weather", weatherRoutes);
+app.use("/api/location", locationRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

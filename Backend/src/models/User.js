@@ -22,6 +22,32 @@ const userSchema = new mongoose.Schema(
             type: String,
             default: "",
         },
+        bio: {
+            type: String,
+            default: "",
+        },
+        followers: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
+        following: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
+        emergencyContacts: [
+            {
+                name: { type: String, required: true },
+                phoneNumber: { type: String, required: true },
+                email: { type: String },
+            }
+        ],
+        expoPushToken: {
+            type: String, // For notifications
+        },
     },
     { timestamps: true }
 );
